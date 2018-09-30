@@ -3,14 +3,14 @@ using System.Threading.Tasks;
 
 namespace XOProject
 {
-    public interface IGenericRepository<T>
+    public interface IGenericRepository<TEntity, TKeyType>
     {
-        Task<T> GetAsync(string id);
+        IQueryable<TEntity> Query();
 
-        IQueryable<T> Query();
+        Task<TEntity> FindByIdAsync(TKeyType id);
 
-        Task InsertAsync(T entity);
+        Task InsertAsync(TEntity entity);
 
-        Task UpdateAsync(T entity);
+        Task UpdateAsync(TEntity entity);
     }
 }

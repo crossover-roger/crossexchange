@@ -1,39 +1,59 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace XOProject.Controller
 {
-    [Route("api/Portfolio")]
+    [Route("api/portfolios")]
     public class PortfolioController : ControllerBase
     {
-        private IPortfolioRepository _portfolioRepository { get; set; }
+        private readonly IPortfolioRepository _portfolioRepository;
 
-        public PortfolioController(IShareRepository shareRepository, ITradeRepository tradeRepository, IPortfolioRepository portfolioRepository)
+        public PortfolioController(IPortfolioRepository portfolioRepository)
         {
             _portfolioRepository = portfolioRepository;
         }
 
-        [HttpGet("{portFolioid}")]
-        public async Task<IActionResult> GetPortfolioInfo([FromRoute]int portFolioid)
+        [HttpGet]
+        public async Task<IActionResult> Get()
         {
-            var portfolio = _portfolioRepository.GetAll().Where(x => x.Id.Equals(portFolioid));
+            var portfolios = await _portfolioRepository.Query().ToListAsync();
+
+            return Ok(portfolios);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get([FromRoute]Guid id)
+        {
+            var portfolio = await _portfolioRepository.Query()
+                .Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
             
             return Ok(portfolio);
         }
 
+        [HttpGet("{id}/trades")]
+        public async Task<IActionResult> GetTrades([FromRoute]Guid id)
+        {
+            var portfolio = await _portfolioRepository.Query()
+                .Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
+
+            return Ok(portfolio?.Trades);
+        }
+
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]Portfolio value)
+        public async Task<IActionResult> Post([FromBody]Portfolio portfolio)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            await _portfolioRepository.InsertAsync(value);
+            await _portfolioRepository.InsertAsync(portfolio);
 
-            return Created($"Portfolio/{value.Id}", value);
+            return Created($"Portfolio/{portfolio.Id}", portfolio);
         }
 
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,14 +8,16 @@ namespace XOProject
 {
     public class TradeAnalysis
     {
-        public double Sum { get; set; }
+        [Column(TypeName = "decimal(5, 2)")]
+        public decimal Sum { get; set; }
 
-        public double Average { get; set; }
+        [Column(TypeName = "decimal(5, 2)")]
+        public decimal Average { get; set; }
 
-        public double Maximum { get; set; }
+        [Column(TypeName = "decimal(5, 2)")]
+        public decimal Maximum { get; set; }
 
-        public double Minimum { get; set; }
-
-        public string Action { get; set; }
+        [Column(TypeName = "decimal(5, 2)")]
+        public decimal Minimum { get; set; }   
     }
 }

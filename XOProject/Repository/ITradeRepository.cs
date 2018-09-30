@@ -1,6 +1,8 @@
-﻿namespace XOProject
+﻿using System;
+
+namespace XOProject
 {
-    public interface ITradeRepository : IGenericRepository<Trade>
+    public interface ITradeRepository : IGenericRepository<Trade, Guid>
     {
     }
 }

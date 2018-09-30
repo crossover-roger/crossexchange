@@ -1,22 +1,31 @@
 
 Project Assessment:
     Cross Exchange is an arbitrarily trading game developed by a startup in a very short span of time called “Super Traders”. 
+
 The purpose of the application is to educate users on the terminology used in the trading of shares.
 
 Notes:
-    - The project registers share and allows admins to updated price of the share on an hourly basis; the share registered should have unique Symbol to identify it and should be all capital letters with 3 characters. The rate of the share should be exactly 2 decimal digits. 
+    - The project registers share and allows admins to updated price of the share on an hourly basis; 
+      The share registered should have unique Symbol to identify it and should be all capital letters with 3 characters. 
+      The rate of the share should be exactly 2 decimal digits. 
+
     - Also, the users should have a portfolio before they can start trading in the shares. 
-    - The frontend application is excluded from the current scope. It is a separate, fully-functional application handled by another team, and we do not want to modify it.
+
+    - The frontend application is excluded from the current scope. It is a separate, fully-functional application handled by another team, 
+      and we do not want to modify it.
 
 Tasks:
 
-    1) For a given symbol of share, get the statistics for that particular share calculating the maximum, minimum, average and Sum of all the trades for that share individually grouped into Buy trades and Sell trades. 
+    1) For a given symbol of share, get the statistics for that particular share calculating 
+       the maximum, minimum, average and Sum of all the trades for that share individually grouped into Buy trades and Sell trades. 
 
     Your goal is to complete the above task. The API specifications are already there in the code as agreed with the frontend team. 
 
-    2) There are a few bugs in the application that we would like you to fix. Even though the project might not be in a great structure, please do not spend your valuable time on structural modifications just focus on fixing the bugs.
+    2) There are a few bugs in the application that we would like you to fix. Even though the project might not be in a great structure, 
+       please do not spend your valuable time on structural modifications just focus on fixing the bugs.
 
-    3) Increase unit test coverage to reach code coverage up to 60%, achieving more than 60% will only consume your valuable time without any extra score.
+    3) Increase unit test coverage to reach code coverage up to 60%, 
+       achieving more than 60% will only consume your valuable time without any extra score.
 
     PLEASE NOTE THAT ALL OF THE TASKS LISTED ABOVE ARE MANDATORY.
 

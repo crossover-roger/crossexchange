@@ -1,17 +1,21 @@
-﻿namespace XOProject
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace XOProject
 {
-    public class Trade
+    public class Trade : BaseModel<Guid>
     {
-        public int Id { get; set; }
-        
-        public string Symbol { get; set; }
+        public Portfolio Portfolio { get; set; }
 
-        public int NoOfShares { get; set; }
+        public Share Share { get; set; }
 
-        public decimal Price { get; set; }       
+        public int Quantity { get; set; }
 
-        public int PortfolioId { get; set; }
-        
-        public string Action { get; set; }
+        public decimal SinglePrice { get; set; }
+
+        public decimal TotalPrice { get; set; }
+
+        public OperationEnum Action { get; set; }
     }
 }

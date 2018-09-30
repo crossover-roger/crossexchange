@@ -9,26 +9,52 @@ using Microsoft.EntityFrameworkCore;
 
 namespace XOProject.Controller
 {
-    [Route("api/Trade/")]
+    [Route("api/trades")]
     public class TradeController : ControllerBase
     {
-        private IShareRepository _shareRepository { get; set; }
-        private ITradeRepository _tradeRepository { get; set; }
-        private IPortfolioRepository _portfolioRepository { get; set; }
+        private readonly IPortfolioRepository _portfolioRepository;
+        private readonly IShareRepository _shareRepository;
+        private readonly ITradeRepository _tradeRepository;
 
-        public TradeController(IShareRepository shareRepository, ITradeRepository tradeRepository, IPortfolioRepository portfolioRepository)
+        public TradeController(IPortfolioRepository portfolioRepository, IShareRepository shareRepository, ITradeRepository tradeRepository)
         {
+            _portfolioRepository = portfolioRepository;
             _shareRepository = shareRepository;
             _tradeRepository = tradeRepository;
-            _portfolioRepository = portfolioRepository;
         }
 
-
-        [HttpGet("{portfolioid}")]
-        public async Task<IActionResult> GetAllTradings([FromRoute]int portFolioid)
+        [HttpGet("{portfolioId}")]
+        public async Task<IActionResult> Get([FromRoute]Guid portfolioId)
         {
-            var trade = _tradeRepository.Query().Where(x => x.PortfolioId.Equals(portFolioid));
-            return Ok(trade);
+            var portfolio = await _portfolioRepository.Query()
+                .Where(x => x.Id.Equals(portfolioId)).FirstOrDefaultAsync();
+
+            var trades = portfolio?.Trades.Select(p => new { p.Id, p.Share.Symbol, p.Quantity, p.SinglePrice, p.TotalPrice, Action = p.Action.ToString() });
+
+            return Ok(trades);
+        }
+
+        [HttpPost("{portfolioId}")]
+        public async Task<IActionResult> Post([FromRoute]Guid portfolioId, [FromBody]TradeViewModel trade)
+        {
+            var portfolio = await _portfolioRepository.Query()
+                .Where(x => x.Id.Equals(portfolioId)).FirstOrDefaultAsync();
+
+            var share = await _shareRepository.Query()
+                .Where(x => x.Symbol.Equals(trade.Symbol)).FirstOrDefaultAsync();
+
+            var newTrade = new Trade()
+                {
+                    Portfolio = portfolio,
+                    Share = share,
+                    Action = trade.Action,
+                    Quantity = trade.Quantity,
+                    SinglePrice = share.CurrentPrice
+                };
+
+            await _tradeRepository.InsertAsync(newTrade);
+
+            return Created($"trades/{newTrade.Id}", newTrade);
         }
 
 
@@ -39,12 +65,34 @@ namespace XOProject.Controller
         /// <param name="symbol"></param>
         /// <returns></returns>
 
-        [HttpGet("Analysis/{symbol}")]
+        [HttpGet("analysis/{symbol}")]
         public async Task<IActionResult> GetAnalysis([FromRoute]string symbol)
         {
-            var result = new List<TradeAnalysis>();
-            
-            return Ok(result);
+            var buyAnalysis = new TradeAnalysis();
+            var sellAnalysis = new TradeAnalysis();
+
+            var share = await _shareRepository.Query().Where(p => p.Symbol.Equals(symbol)).FirstOrDefaultAsync();
+
+            var buyTrades = share?.Trades?.Where(p => p.Action.Equals(OperationEnum.Buy)).ToList();
+            var sellTrades = share?.Trades?.Where(p => p.Action.Equals(OperationEnum.Sell)).ToList();
+
+            if (buyTrades != null)
+            {
+                buyAnalysis.Sum = buyTrades.Sum(p => p.TotalPrice);
+                buyAnalysis.Average = buyTrades.Average(p => p.TotalPrice);
+                buyAnalysis.Minimum = buyTrades.Min(p => p.TotalPrice);
+                buyAnalysis.Maximum = buyTrades.Max(p => p.TotalPrice);
+            }
+
+            if (sellTrades != null)
+            {
+                sellAnalysis.Sum = sellTrades.Sum(p => p.TotalPrice);
+                sellAnalysis.Average = sellTrades.Average(p => p.TotalPrice);
+                sellAnalysis.Minimum = sellTrades.Min(p => p.TotalPrice);
+                sellAnalysis.Maximum = sellTrades.Max(p => p.TotalPrice);
+            }
+
+            return Ok(new { buyAnalysis, sellAnalysis });
         }
 
 

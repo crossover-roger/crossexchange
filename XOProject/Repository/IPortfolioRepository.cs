@@ -1,9 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace XOProject
 {
-    public interface IPortfolioRepository : IGenericRepository<Portfolio>
+    public interface IPortfolioRepository : IGenericRepository<Portfolio, Guid>
     {
-        IQueryable<Portfolio> GetAll();
+       
     }
 }
